@@ -2,7 +2,7 @@
 A tool for parsing Louisiana Digital Library XML files as one of our ETL pipelines.
 </br>
 ## Data Transformation:
-#### 1. XML2Workbench Scrip Documentation:
+### 1. XML2Workbench Scrip Documentation:
 This code appears to be a Python script that performs various operations on XML files, mainly related to extracting unique tags and attributes, checking for errors, and generating CSV reports based on the content of the XML files. Here's a high-level overview of the code's functionality: </br>
 &emsp;&emsp;1.	PART I: Get all the unique Tags and attributes, and write them into a CSV </br>
 &emsp;&emsp;&emsp; a.	The script imports necessary libraries and defines some global variables and data structures. </br>
@@ -25,7 +25,7 @@ This code appears to be a Python script that performs various operations on XML 
 &emsp;&emsp;&emsp; e.	The test_result function is for testing and displaying results.</br>
 &emsp;&emsp;&emsp; f.	The main function processes the command-line arguments, reads CSV data, and processes XML files, generating CSV reports.</br>
 
-#### 2. Build workbench csv, with the option of finding misspelled / non-existent tags and attributes (In Progress)
+### 2. Build workbench csv, with the option of finding misspelled / non-existent tags and attributes (In Progress)
 &ensp;This requires input tag/attribute csv (-e “input tag/attribute csv filename and path”)</br>
 &emsp;&emsp;i. (-o “name of your workbench csv) </br>
 &emsp;&emsp;ii. (-m “(master xml string dictionary)” </br>
