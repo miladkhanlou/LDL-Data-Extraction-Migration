@@ -31,7 +31,7 @@ This code appears to be a Python script that performs various operations on XML 
 &emsp;&emsp;ii. (-m “(master xml string dictionary)” </br>
 &emsp;&emsp;iii. (-I “path to the XML MODS that we are ingesting”)</br>
 
-###### Important notes:
+##### Important notes:
 Master CSV is an edited csv file using output csv from mode 2 that Librarian should add informations (columns of field name associated with xpath)in the way that:</br>
 &emsp;&emsp;•	If we want a attribute's value be written in a field specified in master, librarian need to specify the path's row in another column called "att_needed" and say yes to that and also mention the name of the field in the filed column as well</br>
 &emsp;&emsp;•	If we want to only get the text, apperantly, the column "att_needed" should not be filled out and either should be No or empty and the field column should be filled out.</br>
