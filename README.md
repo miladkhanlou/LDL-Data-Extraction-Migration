@@ -4,7 +4,7 @@ A tool for parsing Louisiana Digital Library XML files as one of our ETL pipelin
 ## Data Transformation:
 
 #### 1. XML2Workbench Scrip Documentation:
-This code appears to be a Python script that performs various operations on XML files, mainly related to extracting unique tags and attributes, checking for errors, and generating CSV reports based on the content of the XML files. Here's a high-level overview of the code's functionality:
+This code appears to be a Python script that performs various operations on XML files, mainly related to extracting unique tags and attributes, checking for errors, and generating CSV reports based on the content of the XML files. Here's a high-level overview of the code's functionality: </br>
 &emsp;&emsp;1.	PART I: Get all the unique Tags and attributes, and write them into a CSV </br>
 &emsp;&emsp;&emsp; a.	The script imports necessary libraries and defines some global variables and data structures. </br>
 &emsp;&emsp;&emsp; b.	It defines a function process_command_line_arguments() to parse command-line arguments using the argparse library.</br>
