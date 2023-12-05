@@ -28,7 +28,7 @@ This code appears to be a Python script that performs various operations on XML 
 &emsp;&emsp;&emsp; e.	The test_result function is for testing and displaying results.</br>
 &emsp;&emsp;&emsp; f.	The main function processes the command-line arguments, reads CSV data, and processes XML files, generating CSV reports.</br>
 #### Example of terminal command: 
-###### python3 xml2csv.py -i FILE_DIRECTORY -cc MASTER_CSV -o OUTPUT_DIRECTORY/CSV_OUTPUT_NAME.csv </br>
+`` python3 xml2csv.py -i FILE_DIRECTORY -cc MASTER_CSV -o OUTPUT_DIRECTORY/CSV_OUTPUT_NAME.csv `` </br>
 
 ### Important notes:
 Master CSV is an edited csv file using output csv from mode 2 that Librarian should add informations (columns of field name associated with xpath)in the way that:</br>
