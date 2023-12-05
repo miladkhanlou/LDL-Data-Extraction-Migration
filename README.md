@@ -8,7 +8,7 @@ This code appears to be a Python script that performs various operations on XML 
 &emsp;&emsp;&emsp; a.	The script imports necessary libraries and defines some global variables and data structures. </br>
 &emsp;&emsp;&emsp; b.	It defines a function process_command_line_arguments() to parse command-line arguments using the argparse library.</br>
 &emsp;&emsp;&emsp; c.	The MODs function processes XML files in the specified input directory, extracts data from them, and yields the results.</br>
-&emsp;&emsp;&emsp; d.	The unique_tag_attrib function populates dictionaries (unique_tag_dict and unique_attrib_dict) to count the occurrences of unique tags and attributes in the XML files.</br>
+&emsp;&emsp;&emsp; d.	The unique_tag_attrib function populates dictionaries to count the occurrences of unique tags and attributes in the XML files.</br>
 &emsp;&emsp;&emsp; e.	The uniq_data_to_dict function prepares the data for writing to a CSV file based on the counts of unique tags and attributes.</br>
 
 &emsp;&emsp;2. PART II: Get the XML Path, check for spelling, and errors</br>
