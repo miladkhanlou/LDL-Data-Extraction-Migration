@@ -2,7 +2,6 @@
 A tool for parsing Louisiana Digital Library XML files as one of our ETL pipelines.
 </br>
 ## Data Transformation:
-
 #### 1. XML2Workbench Scrip Documentation:
 This code appears to be a Python script that performs various operations on XML files, mainly related to extracting unique tags and attributes, checking for errors, and generating CSV reports based on the content of the XML files. Here's a high-level overview of the code's functionality: </br>
 &emsp;&emsp;1.	PART I: Get all the unique Tags and attributes, and write them into a CSV </br>
@@ -33,11 +32,11 @@ This code appears to be a Python script that performs various operations on XML 
 &emsp;&emsp;iii. (-I “path to the XML MODS that we are ingesting”)</br>
 
 ###### Important notes:
-Master CSV is an edited csv file using output csv from mode 2 that Librarian should add informations (columns of field name associated with xpath)in the way that:
-&emsp;&emsp;•	If we want a attribute's value be written in a field specified in master, librarian need to specify the path's row in another column called "att_needed" and say yes to that and also mention the name of the field in the filed column as well
-&emsp;&emsp;•	If we want to only get the text, apperantly, the column "att_needed" should not be filled out and either should be No or empty and the field column should be filled out.
-&emsp;&emsp;•	the only paths that are important for us (either for writing the attribute's value or text in the xpath)
-&emsp;&emsp;•	If we want to have attribute's values in the metadata csv file, we need to have a column that value would be yes for the paths that we need attribute mapping (ex. att_need)-
+Master CSV is an edited csv file using output csv from mode 2 that Librarian should add informations (columns of field name associated with xpath)in the way that:</br>
+&emsp;&emsp;•	If we want a attribute's value be written in a field specified in master, librarian need to specify the path's row in another column called "att_needed" and say yes to that and also mention the name of the field in the filed column as well</br>
+&emsp;&emsp;•	If we want to only get the text, apperantly, the column "att_needed" should not be filled out and either should be No or empty and the field column should be filled out.</br>
+&emsp;&emsp;•	the only paths that are important for us (either for writing the attribute's value or text in the xpath)</br>
+&emsp;&emsp;•	If we want to have attribute's values in the metadata csv file, we need to have a column that value would be yes for the paths that we need attribute mapping (ex. att_need)</br>
 
 
 
