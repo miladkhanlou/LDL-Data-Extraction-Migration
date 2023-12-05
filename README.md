@@ -24,11 +24,6 @@ This code appears to be a Python script that performs various operations on XML 
 &emsp;&emsp;&emsp; e.	The test_result function is for testing and displaying results.</br>
 &emsp;&emsp;&emsp; f.	The main function processes the command-line arguments, reads CSV data, and processes XML files, generating CSV reports.</br>
 
-### 2. Build workbench csv, with the option of finding misspelled / non-existent tags and attributes (In Progress)
-&ensp;This requires input tag/attribute csv (-e “input tag/attribute csv filename and path”)</br>
-&emsp;&emsp;i. (-o “name of your workbench csv) </br>
-&emsp;&emsp;ii. (-m “(master xml string dictionary)” </br>
-&emsp;&emsp;iii. (-I “path to the XML MODS that we are ingesting”)</br>
 
 ### Important notes:
 Master CSV is an edited csv file using output csv from mode 2 that Librarian should add informations (columns of field name associated with xpath)in the way that:</br>
