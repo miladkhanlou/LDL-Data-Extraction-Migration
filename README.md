@@ -1,5 +1,5 @@
 # LDL Data Transformation tools:
-LDL Data Transformation tools are the tools used in Louisiana digital Library ETL pipeline to transform data from xml, RDF files into csv files, and cleans those data to prepare them for the ingest to the new Louisiana Digital Library website.
+LDL Data Transformation tools are the tools used in Louisiana digital Library ETL pipeline to transform data from xml, RDF files into csv files, and cleans those data to prepare them for the ingest to the new Louisiana Digital Library website. Bellow is the instruction for two tools that works as "transformation" phase in our ETL pipeline.
 
 ### 1. XML2Workbench Scrip Documentation:
 This code appears to be a Python script that performs various operations on XML files, mainly related to extracting unique tags and attributes, checking for errors, and generating CSV reports based on the content of the XML files. Here's a high-level overview of the code's functionality: </br>
