@@ -10,7 +10,7 @@ This code appears to be a Python script that performs various operations on XML 
 &emsp;&emsp;&emsp; d.	The unique_tag_attrib function populates dictionaries to count the occurrences of unique tags and attributes in the XML files.</br>
 &emsp;&emsp;&emsp; e.	The uniq_data_to_dict function prepares the data for writing to a CSV file based on the counts of unique tags and attributes.</br>
 #### Example of terminal command: 
-###### python3 xml2csv_6.py -i FILE_DIRECTORY -oat OUTPUT_DIRECTORY/CSV_OUTPUT_NAME </br>
+`` python3 xml2csv_6.py -i FILE_DIRECTORY -oat OUTPUT_DIRECTORY/CSV_OUTPUT_NAME `` </br>
 
 ### &emsp;&emsp; 2. PART II: Get the XML Path, check for spelling, and errors:
 &emsp;&emsp;&emsp; a.	The get_csv function reads a CSV file if provided and stores its data in a dictionary.</br>
@@ -18,7 +18,7 @@ This code appears to be a Python script that performs various operations on XML 
 &emsp;&emsp;&emsp; c.	The error_repeat_check function identifies and stores unique error messages.</br>
 &emsp;&emsp;&emsp; d.	The paths_to_dict function prepares data for writing to a CSV file based on the unique paths and error messages.</br>
 #### Example of terminal command: 
-###### python3 xml2csv_7.py -i FILE_DIRECTORY -c MASTER_CSV -o OUTPUT_DIRECTORY/CSV_OUTPUT_NAME
+`` python3 xml2csv_7.py -i FILE_DIRECTORY -c MASTER_CSV -o OUTPUT_DIRECTORY/CSV_OUTPUT_NAME ``
 
 ### &emsp;&emsp; 3. XML to CSV. Taking MODS XML files and converting them to a workbench csv:
 &emsp;&emsp;&emsp; a.	A class xmlSet is defined to collect and process XML data.</br>
