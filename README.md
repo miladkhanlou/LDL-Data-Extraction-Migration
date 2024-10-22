@@ -53,11 +53,8 @@ The LDL Post-Processing script is designed for the final phase of metadata prepa
 ### Command Example:
 ```python3 LDL-post-processing.py -c METADATA_CSV -f RDF_FILES_DIRECTORY -o OUTPUT_DIRECTORY/OUTPUT_NAME.csv```
 
----
-# LSU ETL Pipeline:
 ### How These Tools Fit into the ETL Pipeline
 These tools play a critical role in the Transformation phase of the ETL process for the Louisiana Digital Library. By automating the extraction and cleaning of metadata from XML and RDF files, they ensure that the content is correctly formatted for the Islandora repository, streamlining the content migration process.
-
 
 
 
