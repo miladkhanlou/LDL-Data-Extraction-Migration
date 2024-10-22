@@ -52,82 +52,11 @@ The LDL Post-Processing script is designed for the final phase of metadata prepa
   * The processed data is saved into a final CSV file, ready for ingestion into Islandora Workbench.
 ### Command Example:
 ```python3 LDL-post-processing.py -c METADATA_CSV -f RDF_FILES_DIRECTORY -o OUTPUT_DIRECTORY/OUTPUT_NAME.csv```
+
 ---
 # LSU ETL Pipeline:
 ### How These Tools Fit into the ETL Pipeline
 These tools play a critical role in the Transformation phase of the ETL process for the Louisiana Digital Library. By automating the extraction and cleaning of metadata from XML and RDF files, they ensure that the content is correctly formatted for the Islandora repository, streamlining the content migration process.
-
-
-## Data Extraction:
-### 1. Extract data Using drush
-- collection_name:collection
-```sh
-cd /var/www/drupal7
-
-drush -u 1 islandora_datastream_crud_fetch_pids --namespace=collection_name --pid_file=/tmp/collection_name.txt
-
-drush -u 1 idcrudfd --pid_file=/tmp/collection_name.txt --datastreams_directory=/tmp/collection_name --dsid=MODS
-drush -u 1 idcrudfd --pid_file=/tmp/collection_name.txt --datastreams_directory=/tmp/collection_name --dsid=RELS-EXT
-drush -u 1 idcrudfd --pid_file=/tmp/collection_name.txt --datastreams_directory=/tmp/collection_name --dsid=OBJ
-```
-### 2. Place Extracted data
-```sh
-cd /tmp/collection_name
-zip collection_name.zip *
-ctl-D
-ctl-D
-```
-### 3. Copy to the target location:
-```sh
-scp dgi-ingest:/tmp/collection_name/amistad-pgoudvis.zip ~/Downloads
-cp ~/Downloads/collection_name.zip /meda/wwc/0A2C-888E/collection_name/
-
-cd /media/wwc/0A2C-888E/collection_name
-mkdir Data
-cd Data
-unzip ../collection_name.zip 
-
-for f in *.jp2; do opj_decompress -i "$f" -OutFor PNG -o "${f%.*}.png"; done;
-```
-
-## Data Transformation using xml2csv python script:
-### STEP1: get the attribute and tags:
-- For windows: ```python3 '.\xml2csv_2.py' -i DATA_DIR -oat OUTPUT_DIR/CSV_NAME(no.csv)```
-
-### STEP2: get paths and errors: 
-- For windows: ```python3 '.\xml2csv.py' -i DATA_DIR -c STEP1_csv(NAME.CSV) v -o OUTPUT_DIR/CSV_NAME(no.csv)```
-
-### STEP3: run xml to csv using the csv field mapping:
-- For windows: ```python3 '.\xml2csv.py' -i DATA_DIR -cc MAPPED_CSV -o OUTPUT_DIR/CSV_NAME(no.csv)```
-
-
-## Data Ingestion using Workbench tool :
-```sh
-./workbench --config CONFIG.yml --check
-./workbench --config CONFIG.yml 
-```
-
-***************
-### Functions
-The code is organized into several functions: </br>
-a.	process_command_line_arguments():</br>
-This function processes command-line arguments using the argparse library and returns the parsed arguments as an object.</br></br>
-b.	files_directories(all_files):</br>
-This function takes a directory path and returns a list of file paths in that directory.</br></br>
-c.	csv_directories(metadata_csv):</br>
-This function takes a directory path and returns a list of CSV files in that directory.</br></br>
-d.	objects_to_df(csvs, OBJS)</br>
-
-***************
-
-### Command Line Arguments
-The code uses command-line arguments to specify the input and output directories and the CSV file with metadata.)</br>
-Command Line Arguments:)</br>
--c or --csv_directory: Path to the directory containing CSV files with metadata.)</br>
--f or --files_directory: Path to the directory containing object files (OBJs).)</br>
--o or --output_directory: Path to the directory where the output CSV files will be saved.)</br>
-
-
 
 
 
