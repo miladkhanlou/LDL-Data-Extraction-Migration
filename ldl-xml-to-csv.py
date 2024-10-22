@@ -5,7 +5,7 @@ import re
 import pandas as pd
 import argparse
 import datetime
-######################################################################## PART I: Get unique Tags and Attributes ########################################################################
+###### PART I: Get unique Tags and Attributes ######
 paths_counts = {}
 check = set()
 paths = []                  # Paths that will be written
@@ -93,7 +93,7 @@ def uniq_data_to_dict(arg):
 
     return to_csv(data, arg)
 
-##### Part II: Get the XML Path, check for spelling and errors in each xml path according to Part 1 #####
+###### Part II: Get the XML Path, check for spelling and errors in each xml path according to Part 1 ######
 def get_csv(arg,argument):
     df_attribTags = pd.read_csv(arg)
     column_names = df_attribTags.columns.tolist()
@@ -161,7 +161,7 @@ def to_csv(dictionary, arg):
         DF.to_csv("{}.csv".format(arg.output_attribsTags), index=0)
         # print("<<< An attribute/Tag csv file saved in this directory : {directory}.csv at {}>>>".format(directory=arg.output_attribsTags,))
 
-###### Part III: Start the xml2workbench process  #####
+###### Part III: Start the xml2workbench process  ######
 class xmlSet(object):
     def __init__(self):
         self.docs = []
@@ -358,7 +358,8 @@ def test_result(field_with_text):
         if string != []:
             print("{}) key: {} \n value: {}\n".format(counter, field, string))
             counter = counter + 1
-########################################################################
+
+
 def main():
     args = process_command_line_arguments()
     if args.input_directory and args.output_attribsTags:
