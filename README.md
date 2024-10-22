@@ -1,12 +1,15 @@
 # Extraction Phase in ETL Pipeline for Louisiana Digital Library (LDL)
-### PID Fetching:
+### 1. PID Fetching:
 We use a custom Drush command to fetch all Persistent Identifiers (PIDs) from a specific collection within the Islandora repository. These PIDs represent unique records or objects within the system.
-### Datastream Retrieval: 
+
+### 2. Datastream Retrieval: 
 After fetching the PIDs, the relevant datastreams (MODS, RELS-EXT, and OBJ) for each PID are extracted. These datastreams contain essential metadata (MODS), relational information (RELS-EXT), and binary objects (OBJ).
-### Compression: 
-All retrieved datastreams and binary files are compressed into a ZIP file for efficient transfer and storage.
-### File Transfer: The ZIP file is securely transferred from the server to a local machine and then copied to an external storage location for further processing.
-### Decompression and Preparation: 
+
+### 3. Compression and File Transfer: 
+* All retrieved datastreams and binary files are compressed into a ZIP file for efficient transfer and storage.
+* The ZIP file is securely transferred from the server to a local machine and then copied to an external storage location for further processing.
+
+### 4. Decompression and Preparation: 
 The compressed ZIP file is extracted into a designated directory, and any necessary file conversions (e.g., JP2 to PNG) are performed to ensure that the objects are in the correct format for the transformation phase.
 
 ---
