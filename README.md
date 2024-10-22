@@ -1,50 +1,63 @@
 # LDL Data Transformation tools:
-LDL Data Transformation tools are the tools used in Louisiana digital Library ETL pipeline to transform data from xml, RDF files into csv files, and cleans those data to prepare them for the ingest to the new Louisiana Digital Library website. Bellow is the instruction for two tools that works as "transformation" phase in our ETL pipeline.</br></br>
+The LDL Data Transformation Tools are designed for the Louisiana Digital Library (LDL) ETL pipeline, specifically to transform and clean metadata extracted from XML and RDF files. These tools prepare the data for ingestion into the new LDL website by converting XML and RDF formats into CSV files, which can then be used with Islandora Workbench for content migration. Below is an overview of two core tools involved in the transformation phase of the ETL pipeline.
 
-## 1. XML2Workbench Scrip Documentation:
-This code appears to be a Python script that performs various operations on XML files, mainly related to extracting unique tags and attributes, checking for errors, and generating CSV reports based on the content of the XML files. Here's a high-level overview of the code's functionality: </br>
-### 1-A) Get all the unique Tags and attributes, and write them into a CSV:
-a.	The script imports necessary libraries and defines some global variables and data structures. </br>
-b.	It defines a function process_command_line_arguments() to parse command-line arguments using the argparse library.</br>
-c.	The MODs function processes XML files in the specified input directory, extracts data from them, and yields the results.</br>
-d.	The unique_tag_attrib function populates dictionaries to count the occurrences of unique tags and attributes in the XML files.</br>
-e.	The uniq_data_to_dict function prepares the data for writing to a CSV file based on the counts of unique tags and attributes.</br>
-#### Example of terminal command: 
-`` python3 xml2csv.py -i FILE_DIRECTORY -oat OUTPUT_DIRECTORY/CSV_OUTPUT_NAME `` </br></br>
 
-### 1-B) PART II: Get the XML Path, check for spelling, and errors:
-a.	The get_csv function reads a CSV file if provided and stores its data in a dictionary.</br>
-b.	The Path_repeat_check function counts the occurrences of unique XML paths.</br>
-c.	The error_repeat_check function identifies and stores unique error messages.</br>
-d.	The paths_to_dict function prepares data for writing to a CSV file based on the unique paths and error messages.</br>
-#### Example of terminal command: 
-`` python3 xml2csv.py -i FILE_DIRECTORY -c MASTER_CSV -o OUTPUT_DIRECTORY/CSV_OUTPUT_NAME `` </br></br>
+## 1. XML to csv Scrip:
+The XML2Workbench script is a Python tool designed to parse XML files, extract tags and attributes, check for errors, and convert the extracted data into CSV format for easy ingestion into Islandora. The script can operate in multiple modes depending on the task, from extracting unique tags to generating a Workbench-ready CSV.
+### Features:
 
-### 1-C) XML to CSV. Taking MODS XML files and converting them to a workbench csv:
-a.	A class xmlSet is defined to collect and process XML data.</br>
-b.	The xml2wb_parse_mods function extracts data from an XML file, including PID (a processed file name).</br>
-c.	The xml2wb_parse function processes XML content, extracting tags, attributes, and values.</br>
-d.	The compare_and_write function associates extracted values with the corresponding fields specified in a CSV file.</br>
-e.	The test_result function is for testing and displaying results.</br>
-f.	The main function processes the command-line arguments, reads CSV data, and processes XML files, generating CSV reports.</br>
+### 1-A) Extracting Unique Tags and Attributes
+* The script processes a directory of XML files, identifying all unique tags and attributes.
+* It counts the occurrences of each tag and attribute and exports this information into a CSV file.
+* This process helps identify the structure of the XML data and prepares it for further analysis or ingestion.
+
+#### Command Example: 
+``python3 xml2csv.py -i INPUT_DIRECTORY -oat OUTPUT_DIRECTORY/OUTPUT_NAME.csv``
+
+### 1-B) XML Path Error Detection and Frequency Analysis
+* This mode reads through XML files to verify path consistency and check for spelling errors.
+* It generates a CSV report containing unique XML paths and any errors detected during processing.
+
+#### Command Example:
+``python3 xml2csv.py -i INPUT_DIRECTORY -c MASTER_CSV -o OUTPUT_DIRECTORY/OUTPUT_NAME.csv``
+
+### 1-C) XML to CSV Conversion:
+* The script processes MODS XML files and converts them into a CSV format compatible with Islandora Workbench.
+* It parses XML elements such as PIDs (Persistent Identifiers), tags, and attributes, mapping them to fields specified in a "Master CSV."
+* This step ensures that metadata and content are properly formatted for ingestion into the Islandora repository.
+
 #### Example of terminal command: 
 `` python3 xml2csv.py -i FILE_DIRECTORY -cc MASTER_CSV -o OUTPUT_DIRECTORY/CSV_OUTPUT_NAME.csv `` </br></br>
 
-### Important notes:
-Master CSV is an edited csv file using output csv from mode 2 that Librarian should add informations (columns of field name associated with xpath)in the way that:</br></br>
-•	If we want a attribute's value be written in a field specified in master, librarian need to specify the path's row in another column called "att_needed" and say yes to that and also mention the name of the field in the filed column as well</br>
-•	If we want to only get the text, apperantly, the column "att_needed" should not be filled out and either should be No or empty and the field column should be filled out.</br>
-•	the only paths that are important for us (either for writing the attribute's value or text in the xpath)</br>
-•	If we want to have attribute's values in the metadata csv file, we need to have a column that value would be yes for the paths that we need attribute mapping (ex. att_need)</br>
+### Command Example:
+``python3 xml2csv.py -i INPUT_DIRECTORY -cc MASTER_CSV -o OUTPUT_DIRECTORY/OUTPUT_NAME.csv``
+* **Important Notes on the Master CSV:**
+* The Master CSV is an edited version of the output from the XML path extraction step. It contains field mappings (columns of field names associated with XPath).
+* If a librarian needs to map an attribute’s value to a field, they must specify the XPath and indicate "yes" in the "att_needed" column.
+* If only text values are required (and not attributes), the "att_needed" column should be left blank or set to "no."
 
-
-## 2) Post-Processing 
-This code performs a post-processing process for LDL (Library Digital Library) content migration using Islandora Workbench. It takes metadata in CSV format, extracts information from RDF files, and prepares the data for importing into Islandora Workbench. The processed data is then saved as a new CSV file.
-It extracts information from RDF files, updates the metadata, and prepares it for import into Islandora Workbench. The resulting CSV files can be used for further data management and curation tasks.</br>
-
-***************
-
+## 2) Post-Processing Script:
+The LDL Post-Processing script is designed for the final phase of metadata preparation, where RDF files are processed to update and refine CSV files for content migration. It ensures that metadata is correctly structured for ingestion into the new LDL platform using Islandora Workbench.
+### Features:
+* Processes metadata from RDF files and extracts key information, such as collection relationships, resource types, and access terms.
+* Updates the CSV with additional fields such as parent_id, field_weight, field_access_terms, and file_paths.
+* Removes unnecessary fields from the metadata and ensures that all required fields are properly formatted for ingestion.
+### Key Functionalities:
+1. File Check and Metadata Updates:
+  * The script verifies if all expected files exist in the dataset and updates the file column accordingly.
+  * It maps access terms (related to collection or group associations) and fills in necessary metadata fields for Islandora Workbench.
+2. RDF Parsing and Metadata Association:
+  * Extracts metadata from RDF files to populate important fields such as parent-child relationships (parent_id), resource weights, and content types (e.g., "Image," "Paged Content," etc.).
+3. Output Generation:
+  * The processed data is saved into a final CSV file, ready for ingestion into Islandora Workbench.
+### Command Example:
+```python3 LDL-post-processing.py -c METADATA_CSV -f RDF_FILES_DIRECTORY -o OUTPUT_DIRECTORY/OUTPUT_NAME.csv```
+---
 # LSU ETL Pipeline:
+### How These Tools Fit into the ETL Pipeline
+These tools play a critical role in the Transformation phase of the ETL process for the Louisiana Digital Library. By automating the extraction and cleaning of metadata from XML and RDF files, they ensure that the content is correctly formatted for the Islandora repository, streamlining the content migration process.
+
+
 ## Data Extraction:
 ### 1. Extract data Using drush
 - collection_name:collection
