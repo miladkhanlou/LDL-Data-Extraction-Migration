@@ -23,6 +23,7 @@ def input_directory(csvs, OBJS):
     coll_num = []
     file_name = []
     id_to_list = LDLdf["id"].tolist() ###Putting the elements of id column to a list###
+    
     for IDs in id_to_list:
         splitted_IDs= IDs.split(':')
         coll_name.append(splitted_IDs[0])
