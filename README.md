@@ -18,7 +18,7 @@ The LDL Data Transformation Tools are designed for the Louisiana Digital Library
 
 
 ## 1. XML to csv Scrip:
-The XML2Workbench script is a Python tool designed to parse XML files, extract tags and attributes, check for errors, and convert the extracted data into CSV format for easy ingestion into Islandora. The script can operate in multiple modes depending on the task, from extracting unique tags to generating a Workbench-ready CSV.
+The xml to csv script is a Python tool designed to parse XML files, extract tags and attributes, check for errors, and convert the extracted data into CSV format for easy ingestion into Islandora. The script can operate in multiple modes depending on the task, from extracting unique tags to generating a Workbench-ready CSV.
 ### Features:
 
 ### 1-A) Extracting Unique Tags and Attributes
@@ -52,11 +52,13 @@ The XML2Workbench script is a Python tool designed to parse XML files, extract t
 * If only text values are required (and not attributes), the "att_needed" column should be left blank or set to "no."
 
 ## 2) Post-Processing Script:
-The LDL Post-Processing script is designed for the final phase of metadata preparation, where RDF files are processed to update and refine CSV files for content migration. It ensures that metadata is correctly structured for ingestion into the new LDL platform using Islandora Workbench.
+The Post-Processing Script plays a crucial role in the final phase of metadata preparation for content migration. It processes RDF files and updates CSV files to ensure metadata is properly structured and formatted for ingestion into the Louisiana Digital Library (LDL) platform using Islandora Workbench. This script automates the task of refining metadata by adding necessary fields, validating file existence, and ensuring consistency across datasets.
+
 ### Features:
-* Processes metadata from RDF files and extracts key information, such as collection relationships, resource types, and access terms.
-* Updates the CSV with additional fields such as parent_id, field_weight, field_access_terms, and file_paths.
-* Removes unnecessary fields from the metadata and ensures that all required fields are properly formatted for ingestion.
+* RDF Metadata Processing: Parses RDF files to extract and update critical metadata fields such as collection relationships, resource types, and access terms.
+* Metadata Enrichment: Adds fields like parent_id, field_weight, field_access_terms, and file paths to enhance the CSV file and ensure it meets the ingestion requirements for contet relationships for the new LDL platform.
+* Data Cleaning: Removes unnecessary or redundant fields and ensures all required fields are properly structured for ingestion.
+
 ### Key Functionalities:
 1. File Check and Metadata Updates:
   * The script verifies if all expected files exist in the dataset and updates the file column accordingly.
