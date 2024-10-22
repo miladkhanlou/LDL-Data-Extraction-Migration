@@ -13,7 +13,7 @@ After fetching the PIDs, the relevant datastreams (MODS, RELS-EXT, and OBJ) for 
 The compressed ZIP file is extracted into a designated directory, and any necessary file conversions (e.g., JP2 to PNG) are performed to ensure that the objects are in the correct format for the transformation phase.
 
 ---
-# Data Transformation tools Phase in ETL Pipeline for Louisiana Digital Library (LDL)
+# Transformation Phase in ETL Pipeline for Louisiana Digital Library (LDL)
 The LDL Data Transformation Tools are designed for the Louisiana Digital Library (LDL) ETL pipeline, specifically to transform and clean metadata extracted from XML and RDF files. These tools prepare the data for ingestion into the new LDL website by converting XML and RDF formats into CSV files, which can then be used with Islandora Workbench for content migration. Below is an overview of two core tools involved in the transformation phase of the ETL pipeline.
 
 
