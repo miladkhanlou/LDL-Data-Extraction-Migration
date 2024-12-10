@@ -1,168 +1,192 @@
-import pandas as pd
 import xml.etree.ElementTree as ET
-import glob
-import os
+import pandas as pd
 import argparse
+import os
+import re
+import numpy as np
+from itertools import combinations
 
+# ----------------------------------------------------------------------
+# PART I: Command Line Argument Parser
+# ----------------------------------------------------------------------
 def process_command_line_arguments():
-    """Parse command-line arguments."""
-    parser = argparse.ArgumentParser(
-        description='Post Processing for LDL Content Migration Using Islandora Workbench')
-    parser.add_argument('-c', '--csv_directory', type=str, help='Path to metadata CSV', required=True)
-    parser.add_argument('-f', '--files_directory', type=str, help='Path to RDF files', required=True)
-    parser.add_argument('-o', '--output_directory', type=str, help='Path for output CSV', required=True)
+    parser = argparse.ArgumentParser(description="Attribute and Tag Finder for XML Collections")
+    parser.add_argument('-i', '--input_directory', type=str, help='Path to the input directory', required=False)
+    parser.add_argument('-oat', '--output_attribsTags', type=str, help='Path to the output attribute and tag list text file', required=False)
+    parser.add_argument('-c', '--attribute_tag_csv', type=str, help='Path to the input CSV file', required=False)
+    parser.add_argument('-cc', '--mapping_csv', type=str, help='Path to the mapping CSV file', required=False)
+    parser.add_argument('-o', '--output_directory', type=str, help='Path to the output CSV file', required=False)
     return parser.parse_args()
 
-def load_metadata(csv_file):
-    """Load metadata from CSV and return a DataFrame."""
-    metadata_df = pd.read_csv(csv_file, encoding='utf-8')
-    metadata_df.rename(columns={'PID': 'id'}, inplace=True)
-    return metadata_df
+# ----------------------------------------------------------------------
+# PART II: Helper Functions
+# ----------------------------------------------------------------------
+def get_csv(csv_file, args):
+    """Load the CSV file and return relevant data based on the mode."""
+    df = pd.read_csv(csv_file)
+    if args.mapping_csv:
+        mapping_df = df[df['needed'] == 'yes']
+        mapping_df['att_needed'] = mapping_df['att_needed'].fillna("no").str.strip().str.lower()
+        return mapping_df
+    elif args.attribute_tag_csv:
+        return {col: list(df[col]) for col in df.columns}
 
-def update_file_column(metadata_df, files_directory):
-    """Update the 'file' column in the metadata DataFrame with file paths."""
-    obj_names = ["{}_{}_OBJ".format(id.split(':')[0], id.split(':')[1])
-                 for id in metadata_df["id"].tolist()]
+def get_pid(file_name):
+    """Extract and format the PID from the file name."""
+    match = re.search(r'[^/]+(?=_MODS)', file_name)
+    return match.group(0).replace('_', ':') if match else ""
 
-    # Create a dictionary for file name lookup
-    file_dict = {os.path.splitext(file)[0]: os.path.splitext(file)[1] 
-                 for file in os.listdir(files_directory) if "OBJ" in file}
+# ----------------------------------------------------------------------
+# PART III: XML Parsing Functions
+# ----------------------------------------------------------------------
+def initiate_parse(input_dir, args, mapping_df=None):
+    """Parse XML files in the input directory based on the selected mode."""
+    files = sorted(f for f in os.listdir(input_dir) if f.endswith(".xml"))
+    all_attribs, all_tags, all_paths, combined_dict = {}, {}, {}, []
 
-    metadata_df["file"] = [
-        f"Data/{obj_name}{file_dict.get(obj_name, '')}" if obj_name in file_dict else ""
-        for obj_name in obj_names
-    ]
+    for file in files:
+        file_path = os.path.join(input_dir, file)
+        root = ET.iterparse(file_path, events=('start', 'end'))
+        print(f"\nParsing {file} ...")
 
-    return metadata_df
-
-def map_access_terms(metadata_df):
-    """Map collection keys to group names."""
-    keys = ['amistad', 'apl', 'cppl', 'dcc', 'ebrpl', 'fpoc', 'hicks', 'hnoc',
-            'lasc', 'lsm', 'lsu', 'lsua', 'lsus', 'lsuhsc', 'lsuhscs', 'latech',
-            'loyno', 'louisiananewspapers', 'mcneese', 'nojh', 'nicholls', 'nsu',
-            'oplib', 'slu', 'subr', 'sowela', 'tahil']
-    
-    values = ['Amistad', 'APL', 'CPPL', 'DCC', 'EBRPL', 'FPOC', 'Hicks', 'HNOC',
-              'LASC', 'LSM', 'LSU', 'LSUA', 'LSUS', 'LSUHSC', 'LSUSHCS', 'LATECH',
-              'LouisianaNewspapers', 'LOYNO', 'McNeese', 'NOJH', 'Nicholls', 'NSU',
-              'OPLIB', 'SLU', 'SUBR', 'SOWELA', 'TAHIL']
-
-    term_mapping = dict(zip(keys, values))
-    metadata_df["field_access_terms"] = metadata_df["id"].apply(lambda x: term_mapping.get(x.split('-')[0], ''))
-    
-    return metadata_df
-
-def parse_rdf_files(rdf_directory):
-    """Parse RDF files and extract relevant metadata."""
-    rdf_files = glob.glob(f"{rdf_directory}/*.rdf")
-    rdf_files.sort()
-
-    tags = []
-    attributes = []
-    text_values = []
-    
-    for rdf_file in rdf_files:
-        try:
-            tree = ET.parse(rdf_file)
-            root = tree.getroot()
-            
-            for element in root.iter():
-                tags.append(element.tag)
-                attributes.append(element.attrib)
-                text_values.append(element.text)
-                
-        except ET.ParseError as e:
-            print(f"Error parsing {rdf_file}: {e}")
-    
-    return tags, attributes, text_values
-
-def process_rdf_metadata(tags, attributes, text_values):
-    """Extract and process data from RDF metadata."""
-    tag_names = [tag.split('}')[-1] for tag in tags]
-    
-    weight_list = []
-    content_type = []
-    parent_ids = []
-    viewers = []
-    issue_dates = []
-    
-    for tag, attrib, text in zip(tag_names, attributes, text_values):
-        if "isSequenceNumberOf" in tag:
-            weight_list.append(text)
+        if args.mapping_csv:
+            result = xml_parse(root, file, args, mapping_df)
+            combined_dict.append(result)
+        elif args.attribute_tag_csv:
+            result = xml_parse(root, file, args)
+            for xpath in result:
+                all_paths[xpath] = all_paths.get(xpath, 0) + 1
         else:
-            weight_list.append("")
-        
-        # Determine content type and viewer based on model
-        model = attrib.get('MODEL', '')
-        if model == 'info:fedora/islandora:bookCModel':
-            content_type.append('Paged Content')
-            viewers.append('Mirador')
-        elif model == 'info:fedora/islandora:sp_large_image_cmodel':
-            content_type.append('Image')
-            viewers.append('OpenSeadragon')
-        elif model == 'info:fedora/islandora:sp_pdf':
-            content_type.append('Document')
-            viewers.append('PDF.js')
+            file_attribs, file_tags = xml_parse(root, file, args)
+            for attrib in file_attribs:
+                all_attribs[attrib] = all_attribs.get(attrib, 0) + 1
+            for tag in file_tags:
+                all_tags[tag] = all_tags.get(tag, 0) + 1
+
+    if args.mapping_csv:
+        return combined_dict
+    elif args.attribute_tag_csv:
+        return all_paths
+    else:
+        return uniq_data_to_dict(all_attribs, all_tags)
+
+def xml_parse(root, filename, args, mapping_df=None):
+    """Parse XML and collect data based on the selected mode."""
+    all_tags, all_attribs, path_list, mapped_data = [], [], [], {}
+    path_name = []
+
+    def generate_attribute_permutations(attributes):
+        keys = list(attributes.keys())
+        return [
+            {k: attributes[k] for k in combo}
+            for r in range(1, len(keys) + 1)
+            for combo in combinations(keys, r)
+        ]
+
+    for event, elem in root:
+        tag = elem.tag.split("}")[-1] if "}" in elem.tag else elem.tag
+
+        if event == 'start':
+            path_name.append(tag)
+            current_path = '/'.join(path_name)
+            attributes = elem.attrib
+
+            if args.attribute_tag_csv:
+                path_list.append(current_path)
+            elif args.mapping_csv:
+                mapped_data[current_path] = mapped_data.get(current_path, "")
+                if elem.text:
+                    mapped_data[current_path] += f" -- {elem.text.strip()}" if mapped_data[current_path] else elem.text.strip()
+            else:
+                all_tags.append(tag)
+
+            if attributes:
+                combined_attrs = ", ".join(f"@{k.split('}')[-1]}='{v}'" for k, v in attributes.items())
+                combined_path = f"{current_path} [{combined_attrs}]"
+                if args.attribute_tag_csv:
+                    path_list.append(combined_path)
+                elif args.mapping_csv:
+                    mapped_data[combined_path] = mapped_data.get(combined_path, "")
+                    if elem.text:
+                        mapped_data[combined_path] += f" -- {elem.text.strip()}" if mapped_data[combined_path] else elem.text.strip()
+                else:
+                    all_attribs.extend(attributes.items())
+                if len(attributes) > 1:
+                    for perm in generate_attribute_permutations(attributes):
+                        perm_attrs = ", ".join(f"@{k.split('}')[-1]}='{v}'" for k, v in perm.items())
+                        perm_path = f"{current_path} [@{perm_attrs}]"
+                        if args.attribute_tag_csv:
+                            path_list.append(perm_path)
+                        if arg.mapping_csv:
+                            mapped_data[perm_path] = perm_attrs
+            path_name[-1] = f"{tag} [{combined_attrs}]"
+
+        elif event == 'end':
+            path_name.pop()
+            elem.clear()
+
+    if args.attribute_tag_csv:
+        return path_list
+    elif args.mapping_csv:
+        return compare_and_map(filename, mapped_data, mapping_df)
+    else:
+        return all_attribs, all_tags
+
+def compare_and_map(filename, xml_data, mapping_df):
+    """Map XML data to fields based on the mapping CSV."""
+    print("=============== Compare and Map ===============")
+    mapped_data = {"pid": get_pid(filename)}
+    for path, field_name in zip(mapping_df["xpaths"], mapping_df["fields"]):
+        value = xml_data.get(path, "").strip()
+        if value:
+            mapped_data[field_name] = f"{mapped_data.get(field_name, '')} -- {value}" if field_name in mapped_data else value
         else:
-            content_type.append('')
-            viewers.append('')
+            mapped_data.setdefault(field_name, "")
+    return mapped_data
 
-        # Extract date issued
-        if "dateIssued" in tag and text:
-            issue_dates.append(text)
-        else:
-            issue_dates.append('')
-        
-        # Extract parent ID
-        if "isMemberOf" in tag and text:
-            parent_ids.append(text.split('/')[-1])
-        else:
-            parent_ids.append('')
-    
-    return weight_list, content_type, viewers, parent_ids, issue_dates
+def uniq_data_to_dict(all_attribs, all_tags):
+    data = {
+        'attributes': list(all_attribs.keys()),
+        'attributes_count': list(all_attribs.values()),
+        'tags': list(all_tags.keys()),
+        'tags_count': list(all_tags.values())
+    }
+    max_length = max(len(data['attributes']), len(data['tags']))
+    for key in data:
+        data[key] += [np.nan] * (max_length - len(data[key]))
+    return data
 
-def update_metadata_with_rdf(metadata_df, rdf_directory):
-    """Update metadata DataFrame with data from RDF files."""
-    tags, attributes, text_values = parse_rdf_files(rdf_directory)
-    
-    weight_list, content_type, viewers, parent_ids, issue_dates = process_rdf_metadata(tags, attributes, text_values)
-    
-    metadata_df["parent_id"] = parent_ids
-    metadata_df["field_weight"] = weight_list
-    metadata_df["field_model"] = content_type
-    metadata_df["field_viewer_override"] = viewers
-    metadata_df["field_edtf_date_issued"] = issue_dates
-    metadata_df["field_edtf_date_created"] = ""
-    metadata_df["field_linked_agent"] = ""
 
-    # Sorting for better organization
-    metadata_df.sort_values(by=['field_model', 'field_identifier', 'parent_id', 'field_weight'], 
-                            ascending=[True, False, True, True], inplace=True)
-    
-    return metadata_df
+def write_to_csv(data, output_file, args):
+    """Write the processed data to a CSV file."""
+    if args.attribute_tag_csv:
+        df = pd.DataFrame({"xpaths": list(data.keys()), "counts": list(data.values())})
+        df.to_csv(output_file, index=False)
+        print(f"Step 2 - All XPaths written to {output_file}")
+    elif args.mapping_csv:
+        df = pd.DataFrame(data)
+        df.to_csv(output_file, index=False)
+        print(f"Step 3 - Mapped data written to {output_file}")
+    else:
+        df = pd.DataFrame(data)
+        df.to_csv(output_file, index=False)
+        print(f"Step 1 - Attributes and tags data written to {output_file}")
 
-def write_output(metadata_df, output_file):
-    """Write the final processed metadata to a CSV file."""
-    metadata_df.to_csv(output_file, index=False)
-    print(f"Data successfully written to {output_file}")
-
+# ----------------------------------------------------------------------
+# Main Function
+# ----------------------------------------------------------------------
 def main():
     args = process_command_line_arguments()
-
-    # Step 1: Load metadata from CSV
-    metadata_df = load_metadata(args.csv_directory)
-
-    # Step 2: Update file column based on available OBJ files
-    metadata_df = update_file_column(metadata_df, args.files_directory)
-
-    # Step 3: Map access terms
-    metadata_df = map_access_terms(metadata_df)
-
-    # Step 4: Update metadata with RDF data
-    metadata_df = update_metadata_with_rdf(metadata_df, args.files_directory)
-
-    # Step 5: Write the final CSV output
-    write_output(metadata_df, args.output_directory)
+    if args.input_directory and args.output_attribsTags:
+        attrib_tags = initiate_parse(args.input_directory, args)
+        write_to_csv(attrib_tags, args.output_attribsTags, args)
+    elif args.input_directory and args.output_directory and args.attribute_tag_csv:
+        all_paths = initiate_parse(args.input_directory, args)
+        write_to_csv(all_paths, args.output_directory, args)
+    elif args.mapping_csv and args.input_directory and args.output_directory:
+        mapping_df = get_csv(args.mapping_csv, args)
+        combined_data = initiate_parse(args.input_directory, args, mapping_df)
+        write_to_csv(combined_data, args.output_directory, args)
 
 if __name__ == "__main__":
     main()
